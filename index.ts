@@ -26,16 +26,17 @@ const app = initializeApp({
 
 const firestore = getFirestore(app);
 
-const iftttApiClient = axios.create({
-  baseURL: 'https://maker.ifttt.com',
-});
-
-const apiClient = axios.create({
+const peingApiClient = axios.create({
   withCredentials: true,
   headers: {
     cookie: `${process.env.APP_COOKIE || ''}`,
   },
 });
+
+if (!Object.values(environments).every((v) => !!v)) {
+  console.error('Missing Environment');
+  process.exit(1);
+}
 
 async function getDataDocumentRef(): Promise<
   DocumentReference<PermanentData>
@@ -59,7 +60,7 @@ async function getLastUpdatedAt(): Promise<string | undefined> {
 }
 
 async function run() {
-  const response = await apiClient.get('https://peing.net/ja/box');
+  const response = await peingApiClient.get('https://peing.net/ja/box');
   const DOM = new JSDOM(response.data);
   const questionElement = DOM.window.document.body
     .querySelector('[data-questions]')
@@ -78,12 +79,12 @@ async function run() {
     return;
   }
 
-  setDoc(dataRef, {
+  await setDoc(dataRef, {
     lastUpdatedAt: dayjs().format(),
   });
 
-  await iftttApiClient.post(
-    `/trigger/${process.env.APP_IFTTT_EVENT_NAME}/json/with/key/${process.env.APP_IFTTT_SERVICE_KEY}`,
+  await axios.post(
+    `https://maker.ifttt.com/trigger/${process.env.APP_IFTTT_EVENT_NAME}/json/with/key/${process.env.APP_IFTTT_SERVICE_KEY}`,
     {
       value1: question.body,
       value2: question.eye_catch.url,
