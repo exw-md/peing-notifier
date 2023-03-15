@@ -30,3 +30,7 @@ export type Question = {
   is_receive_dm: boolean;
   is_choose_question: boolean;
 };
+
+export type PermanentData = {
+  lastUpdatedAt: string;
+}

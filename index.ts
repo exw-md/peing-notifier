@@ -10,7 +10,7 @@ import {
   getDoc,
   setDoc,
 } from '@firebase/firestore';
-import { Question } from './type';
+import { Question, PermanentData } from './type';
 
 const environments: { [key: string]: string } = {
   APP_FIREBASE_COLLECTION_ID: `${process.env.APP_FIREBASE_COLLECTION_ID}`,
@@ -38,13 +38,13 @@ const apiClient = axios.create({
 });
 
 async function getDataDocumentRef(): Promise<
-  DocumentReference<{ lastUpdatedAt: string }>
+  DocumentReference<PermanentData>
 > {
-  const dataRef = doc<{ lastUpdatedAt: string }>(
+  const dataRef = doc<PermanentData>(
     collection(
       firestore,
       environments.APP_FIREBASE_COLLECTION_ID,
-    ) as CollectionReference<{ lastUpdatedAt: string }>,
+    ) as CollectionReference<PermanentData>,
     environments.APP_FIREBASE_DOCUMENT_ID,
   );
   return dataRef;
@@ -53,7 +53,7 @@ async function getDataDocumentRef(): Promise<
 async function getLastUpdatedAt(): Promise<string | undefined> {
   const documentRef = await getDataDocumentRef();
   const peingNotifierData = (
-    await getDoc<{ lastUpdatedAt: string }>(documentRef)
+    await getDoc<PermanentData>(documentRef)
   ).data();
   return peingNotifierData?.lastUpdatedAt;
 }
