@@ -17,6 +17,9 @@ const environments: { [key: string]: string } = {
   APP_FIREBASE_DOCUMENT_ID: `${process.env.APP_FIREBASE_DOCUMENT_ID}`,
   APP_FIREBASE_API_KEY: `${process.env.APP_FIREBASE_API_KEY}`,
   APP_FIREBASE_PROJECT_ID: `${process.env.APP_FIREBASE_PROJECT_ID}`,
+  APP_COOKIE: `${process.env.APP_COOKIE}`,
+  APP_IFTTT_EVENT_NAME: `${process.env.APP_IFTTT_EVENT_NAME}`,
+  APP_IFTTT_SERVICE_KEY: `${process.env.APP_IFTTT_SERVICE_KEY}`,
 };
 
 const app = initializeApp({
@@ -29,7 +32,7 @@ const firestore = getFirestore(app);
 const peingApiClient = axios.create({
   withCredentials: true,
   headers: {
-    cookie: `${process.env.APP_COOKIE || ''}`,
+    cookie: `${environments.APP_COOKIE || ''}`,
   },
 });
 
@@ -38,9 +41,7 @@ if (!Object.values(environments).every((v) => !!v)) {
   process.exit(1);
 }
 
-async function getDataDocumentRef(): Promise<
-  DocumentReference<PermanentData>
-> {
+function getDataDocumentRef(): DocumentReference<PermanentData> {
   const dataRef = doc<PermanentData>(
     collection(
       firestore,
@@ -52,44 +53,48 @@ async function getDataDocumentRef(): Promise<
 }
 
 async function getLastUpdatedAt(): Promise<string | undefined> {
-  const documentRef = await getDataDocumentRef();
-  const peingNotifierData = (
-    await getDoc<PermanentData>(documentRef)
-  ).data();
+  const documentRef = getDataDocumentRef();
+  const peingNotifierData = (await getDoc<PermanentData>(documentRef)).data();
   return peingNotifierData?.lastUpdatedAt;
 }
 
 async function run() {
-  const response = await peingApiClient.get('https://peing.net/ja/box');
-  const DOM = new JSDOM(response.data);
-  const questionElement = DOM.window.document.body
-    .querySelector('[data-questions]')
-    ?.getAttribute('data-questions');
-  if (!questionElement) {
-    console.error('Missing question list element.');
-    return;
+  try {
+    const response = await peingApiClient.get('https://peing.net/ja/box');
+    const DOM = new JSDOM(response.data);
+    const questionElement = DOM.window.document.body
+      .querySelector('[data-questions]')
+      ?.getAttribute('data-questions');
+    if (!questionElement) {
+      console.error('Missing question list element.');
+      return;
+    }
+    const questions: Question[] = JSON.parse(
+      decodeURIComponent(questionElement),
+    );
+    const [question] = questions;
+    const lastUpdatedAt = await getLastUpdatedAt();
+    const dataRef = getDataDocumentRef();
+
+    if (dayjs(question.created_at).diff(lastUpdatedAt) < 0) {
+      console.log('Missing questions');
+      return;
+    }
+
+    await setDoc(dataRef, {
+      lastUpdatedAt: dayjs().format(),
+    });
+
+    await axios.post(
+      `https://maker.ifttt.com/trigger/${environments.APP_IFTTT_EVENT_NAME}/json/with/key/${environments.APP_IFTTT_SERVICE_KEY}`,
+      {
+        value1: question.body,
+        value2: question.eye_catch.url,
+      },
+    );
+  } catch (error) {
+    console.error('An error occurred:', error);
   }
-  const questions: Question[] = JSON.parse(decodeURIComponent(questionElement));
-  const [question] = questions;
-  const lastUpdatedAt = await getLastUpdatedAt();
-  const dataRef = await getDataDocumentRef();
-
-  if (dayjs(question.created_at).diff(lastUpdatedAt) < 0) {
-    console.log('Missing questions');
-    return;
-  }
-
-  await setDoc(dataRef, {
-    lastUpdatedAt: dayjs().format(),
-  });
-
-  await axios.post(
-    `https://maker.ifttt.com/trigger/${process.env.APP_IFTTT_EVENT_NAME}/json/with/key/${process.env.APP_IFTTT_SERVICE_KEY}`,
-    {
-      value1: question.body,
-      value2: question.eye_catch.url,
-    },
-  );
 }
 
 run();
