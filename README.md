@@ -16,10 +16,6 @@ You will need accounts for peing, IFTTT, and Discord.
 
 For detailed instructions, please refer to [this link](link).
 
-## Troubleshooting
-
-TBD
-
 ## License
 
 This project is released under the MIT License. For more details, please see the [LICENSE](LICENSE) file.
