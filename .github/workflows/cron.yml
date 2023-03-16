@@ -1,4 +1,4 @@
-name: todo
+name: cron
 
 on:
   schedule:
@@ -14,7 +14,7 @@ env:
   APP_FIREBASE_PROJECT_ID: ${{ secrets.APP_FIREBASE_PROJECT_ID }}
 
 jobs:
-  cleanup:
+  hourly:
     runs-on: ubuntu-latest
 
     steps:
