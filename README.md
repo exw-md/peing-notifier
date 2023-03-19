@@ -2,7 +2,7 @@
 
 ## Overview
 
-A tool to transfer new questions from your peing　questions to Discord. Simply set it up with GitHub Actions and receive notifications in your channel every hour.
+A tool to transfer new questions from your peing questions to Discord. Simply set it up with GitHub Actions and receive notifications in your channel every hour.
 
 ## Prerequisites
 
