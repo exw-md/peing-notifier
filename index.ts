@@ -11,6 +11,12 @@ import {
   setDoc,
 } from '@firebase/firestore';
 import { Question, PermanentData } from './type';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('Asia/Tokyo');
 
 const environments: { [key: string]: string } = {
   APP_FIREBASE_COLLECTION_ID: `${process.env.APP_FIREBASE_COLLECTION_ID}`,
@@ -85,13 +91,27 @@ async function run() {
       lastUpdatedAt: dayjs().format(),
     });
 
-    await axios.post(
-      `https://maker.ifttt.com/trigger/${environments.APP_IFTTT_EVENT_NAME}/json/with/key/${environments.APP_IFTTT_SERVICE_KEY}`,
-      {
-        value1: question.body,
-        value2: question.eye_catch.url,
-      },
-    ).catch((e)=>console.log(e))
+    await axios
+      .post(
+        `https://maker.ifttt.com/trigger/${environments.APP_IFTTT_EVENT_NAME}/with/key/${environments.APP_IFTTT_SERVICE_KEY}`,
+        {
+          value1: dayjs().format('YYYY/MM/DD HH:mm'),
+          value2: question.body,
+          value3: question.eye_catch.url,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+      .then((r) => {
+        console.log(r);
+      })
+      .catch((e) => {
+        console.log(e.response.data.errors);
+      });
+    process.exit(0);
   } catch (error) {
     console.error('An error occurred:', error);
   }
