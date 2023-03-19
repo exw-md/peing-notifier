@@ -91,7 +91,7 @@ async function run() {
         value1: question.body,
         value2: question.eye_catch.url,
       },
-    );
+    ).catch((e)=>console.log(e.data.errors))
   } catch (error) {
     console.error('An error occurred:', error);
   }
