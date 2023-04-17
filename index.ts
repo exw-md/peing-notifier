@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import dayjs from 'dayjs';
-import { Question, PermanentData } from './type';
+import { Question } from './type';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import initMDBClient from '@elevenback/mdb-client';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -13,9 +14,15 @@ const environments: { [key: string]: string } = {
   APP_COOKIE: `${process.env.APP_COOKIE}`,
   APP_IFTTT_EVENT_NAME: `${process.env.APP_IFTTT_EVENT_NAME}`,
   APP_IFTTT_SERVICE_KEY: `${process.env.APP_IFTTT_SERVICE_KEY}`,
+  APP_MINDB_ORIGIN: `${process.env.APP_MINDB_ORIGIN}`,
+  APP_MINDB_ATOM_ID: `${process.env.APP_MINDB_ATOM_ID}`,
   APP_MINDB_TOKEN: `${process.env.APP_MINDB_TOKEN}`,
-  APP_MINDB_URL: `${process.env.APP_MINDB_URL}`
 };
+
+const mdbClient = initMDBClient({
+  apiOrigin: environments.APP_MINDB_ORIGIN,
+  token: environments.APP_MINDB_TOKEN,
+})
 
 const peingApiClient = axios.create({
   withCredentials: true,
@@ -30,20 +37,12 @@ if (!Object.values(environments).every((v) => !!v)) {
 }
 
 async function getLastUpdatedAt(): Promise<string | null> {
-  const { data } = await axios.get(process.env.APP_MINDB_URL || '', {
-    headers: {
-      Authorization: `Bearer ${process.env.APP_MINDB_TOKEN}`
-    }
-  })
-  return data.data
+  const data = await mdbClient.getAtomValue(environments.APP_MINDB_ATOM_ID);
+  return data || '';
 }
 
 async function saveLastUpdatedAt(lastUpdatedAt: string) {
-  await axios.put(process.env.APP_MINDB_URL || '', { value: lastUpdatedAt }, {
-    headers: {
-      Authorization: `Bearer ${process.env.APP_MINDB_TOKEN}`
-    }
-  })
+  await mdbClient.updateAtomValue(environments.APP_MINDB_ATOM_ID, lastUpdatedAt);
   return;
 }
 

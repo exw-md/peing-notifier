@@ -10,6 +10,7 @@
     "format": "rome format ./index.ts --write"
   },
   "dependencies": {
+    "@elevenback/mdb-client": "^0.2.0",
     "@types/jsdom": "^21.1.0",
     "@types/node": "^18.15.3",
     "axios": "^1.3.4",
