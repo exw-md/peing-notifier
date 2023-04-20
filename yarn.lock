@@ -9,10 +9,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@elevenback/mdb-client@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@elevenback/mdb-client/-/mdb-client-0.2.0.tgz#10891985380cafc50884f3b2c15b4639564d17af"
-  integrity sha512-SYBQpsGPml8DZykSm55H6KieARND7iB/8HM+/PAfJBZPvvOUA1NDixZy23NM5531XZmX4XgWmR94bZaiEM/+Sw==
+"@elevenback/mdb-client@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@elevenback/mdb-client/-/mdb-client-0.2.1.tgz#b44f05302450333e4dc91be7f65eebb091e6cb45"
+  integrity sha512-ENzi7NpWMEoGnRi0eZs/ViYAzg48dl4JxbNSUZPDwMSDTXeHhChWkzKEBhfGrTtNqPiWSsUY8wTBWzDN7ZZQ3g==
   dependencies:
     axios "^1.3.5"
     rome "^0.10.1"
