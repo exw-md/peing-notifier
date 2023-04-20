@@ -10,6 +10,8 @@ env:
   APP_IFTTT_SERVICE_KEY: ${{ secrets.APP_IFTTT_SERVICE_KEY }}
   APP_MINDB_TOKEN: ${{ secrets.APP_MINDB_TOKEN }}
   APP_MINDB_URL: ${{ secrets.APP_MINDB_URL }}
+  APP_MINDB_ATOM_ID: ${{ secrets.APP_MINDB_ATOM_ID }} 
+  APP_MINDB_ORIGIN: ${{ secrets.APP_MINDB_ORIGIN }}
 
 jobs:
   hourly:
