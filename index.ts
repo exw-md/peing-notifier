@@ -11,12 +11,12 @@ dayjs.extend(timezone);
 dayjs.tz.setDefault('Asia/Tokyo');
 
 const environments: { [key: string]: string } = {
-  APP_COOKIE: `${process.env.APP_COOKIE}`,
-  APP_IFTTT_EVENT_NAME: `${process.env.APP_IFTTT_EVENT_NAME}`,
-  APP_IFTTT_SERVICE_KEY: `${process.env.APP_IFTTT_SERVICE_KEY}`,
-  APP_MINDB_ORIGIN: `${process.env.APP_MINDB_ORIGIN}`,
-  APP_MINDB_ATOM_ID: `${process.env.APP_MINDB_ATOM_ID}`,
-  APP_MINDB_TOKEN: `${process.env.APP_MINDB_TOKEN}`,
+  APP_COOKIE: `${process.env.APP_COOKIE}`.replace(/\n/g, ''),
+  APP_IFTTT_EVENT_NAME: `${process.env.APP_IFTTT_EVENT_NAME}`.replace(/\n/g, ''),
+  APP_IFTTT_SERVICE_KEY: `${process.env.APP_IFTTT_SERVICE_KEY}`.replace(/\n/g, ''),
+  APP_MINDB_ORIGIN: `${process.env.APP_MINDB_ORIGIN}`.replace(/\n/g, ''),
+  APP_MINDB_ATOM_ID: `${process.env.APP_MINDB_ATOM_ID}`.replace(/\n/g, ''),
+  APP_MINDB_TOKEN: `${process.env.APP_MINDB_TOKEN}`.replace(/\n/g, ''),
 };
 
 const mdbClient = initMDBClient({
